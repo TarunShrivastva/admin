@@ -2,7 +2,6 @@
 
 namespace App\Admin\Controllers;
 
-use App\Article;
 use App\Author;
 
 use Encore\Admin\Form;
@@ -15,7 +14,8 @@ use App\Admin\Extensions\CheckRow;
 use Encore\Admin\Grid\Column;
 use Encore\Admin\Grid\Displayers\Editable;
 
-class ArticleController extends Controller
+
+class AuthorController extends Controller
 {
     use ModelForm;
 
@@ -28,7 +28,7 @@ class ArticleController extends Controller
     {
         return Admin::content(function (Content $content) {
 
-            $content->header('Articles');
+            $content->header('Author');
             $content->description('Listing');
 
             $content->body($this->grid());
@@ -45,10 +45,10 @@ class ArticleController extends Controller
     {
         return Admin::content(function (Content $content) use ($id) {
 
-            $content->header('Article');
+            $content->header('Author');
             $content->description('Edit');
+            
             $content->body($this->form()->edit($id));
-
         });
     }
 
@@ -61,9 +61,8 @@ class ArticleController extends Controller
     {
         return Admin::content(function (Content $content) {
 
-            $content->header('Article');
-            $content->description('Add Article');
-
+            $content->header('Authir');
+            $content->description('Add');
             $content->body($this->form());
         });
     }
@@ -75,26 +74,20 @@ class ArticleController extends Controller
      */
     protected function grid()
     {
-        return Admin::grid(Article::class, function (Grid $grid) {
+        return Admin::grid(Author::class, function (Grid $grid) {
             $grid->model()->orderBy('id', 'DESC');
             $grid->id('ID')->sortable();
-            $grid->title('Title')->limit(20);
-            $grid->author()->author('Author');
-            $grid->status('status')->editable(); //switch($states)
+            $grid->author('author')->limit(20);
+            $grid->author_email('author_email')->limit(20);
             $grid->image()->image('http://localhost:8000/upload/', 100, 100);
-            $grid->created_at()->sortable();
-            $grid->updated_at()->sortable();
+            $grid->status('status')->editable();
+            $grid->created_at();
+            $grid->updated_at();
             $grid->filter(function ($filter) {
-                $filter->like('title');
+                $filter->like('author');
                 $filter->between('created_at')->datetime();
                 $filter->useModal();
             });
-            // $states = [
-            //     '1'  => ['value' => 1, 'text' => 'YES', 'color' => 'primary'],
-            //     '0' => ['value' => 0, 'text' => 'NO', 'color' => 'default'],
-            // ];
-            // $grid->author()->status('Author Status');
-            // $grid->deleted_at()->sortable();
         });
     }
 
@@ -105,19 +98,12 @@ class ArticleController extends Controller
      */
     protected function form()
     {
-        return Admin::form(Article::class, function (Form $form) {
-            $authors = Author::where('status','1')->get();
-            $authors = $authors->toArray();
-            $authorArray = array('0','Please Select An Author');//
-            foreach ($authors as $key => $value) {
-                array_push($authorArray,$value['author']);    
-            }
-            // $form->textarea('description','Description');
-            $form->text('title','Title')->attribute(['id' => 'title', 'name' => 'title', 'class' => 'form-control title test'])->rules('required|min:3');
-            $form->ckeditor('description','Description')->rules('required');
-            $form->select('author_id','Author')->options($authorArray)->rules('required');
+        return Admin::form(Author::class, function (Form $form) {
+            $form->text('author','Author')->rules('required|min:3');
+            $form->email('author_email','Email')->rules('required|min:3');
+            $form->textarea('address','Address')->rules('required|min:3');
             $form->image('image','Image')->uniqueName()->rules('required|mimes:jpg,jpeg,png');
             $form->select('status','Status')->options(array('0'=>'Off', '1' => 'On'))->rules('required');
-        });
+       });
     }
 }

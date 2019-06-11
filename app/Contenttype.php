@@ -5,39 +5,41 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Category extends Model
+class Contenttype extends Model
 {
-    use SoftDeletes;
-    /**
+	use SoftDeletes;
+
+	/**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = [
-        'name' ,'url', 'icon', 'parent_id','status'
-    ];
+    protected $fillable = ['content_type_name','url','status'];
 
     /**
      * The attributes that aren't mass assignable.
      *
      * @var array
      */
-    protected $guarded = [
-        'created_at', 'updated_at'
-    ];
-    
+    protected $guarded = ['created_at','updated_at'];
+
     /**
      * The attributes that should be mutated to dates.
      *
      * @var array
      */
-    // protected $dates = ['deleted_at'];    
+    protected $dates = ['deleted_at'];    
 
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'categories';
-    
+    protected $table = 'content_types';
+
+    public function article()
+    {
+        return $this->hasMany('App\AdminModel\Article');
+    }
+
 }
